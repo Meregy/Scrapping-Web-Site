@@ -1,16 +1,23 @@
+import os
 import pandas as pd
-from Assets.Scraper import Scrapping
-from Assets.utils import diff_, total, div_, category_count
+from Assets.utils import diff_, total, div_, category_count, latest_file
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objects as go
 
-building_name = 'HUAWEI'
-sc = Scrapping(building_name)
-file = sc.downloader()
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
+app.title = '2215 Report Dashboard'
+
+download_path = os.path.join(os.getcwd(), "data")
+# building_name = 'HUAWEI'
+# sc = Scrapping(building_name)
+file = latest_file('Export*.csv', download_path)
+# file = os.path.join(os.getcwd(), "data",'Export.csv')
 df = pd.read_csv(file)
-log_out = sc.logging_out()
+# log_out = sc.logging_out()
 df[['Task Reported Date', 'Finish Date', 'Task Due By Date']] = df[
     ['Task Reported Date', 'Finish Date', 'Task Due By Date']].apply(pd.to_datetime)
 df = df.set_index("Task Reported Date")
@@ -51,9 +58,10 @@ fig4 = fig = go.Figure(data=[go.Pie(labels=category, values=total_category, hole
 fig4.update_layout(title_text="Breakdown By Category")
 
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+
+
 
 colors = {'background': '#111111',
           'text': '#1e702b'}
@@ -91,6 +99,6 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     )
 ])
 
-if __name__ == '__main__':
-    app.run_server(debug=False)
 
+if __name__ == '__main__':
+    app.run_server(debug=True)

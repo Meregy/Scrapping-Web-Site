@@ -1,4 +1,8 @@
+import fnmatch
 from datetime import datetime
+import glob
+import os
+
 
 
 
@@ -52,6 +56,18 @@ def category_count(df, category_list):
             total_category += [0]
 
     return total_category
+
+
+def latest_file(pattern, path):
+    result = []
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            # if self.result:
+            #     os.remove(os.path.join(root, name))
+            if fnmatch.fnmatch(name, pattern):
+                result.append(os.path.join(root, name))
+    file = max(result, key=os.path.getctime)
+    return file
 
 
 # def category_priority_count(df, category_list, priority=False):
